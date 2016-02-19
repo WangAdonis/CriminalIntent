@@ -1,6 +1,6 @@
 package cn.adonis.criminalintent.fragment;
 
-import android.app.ListFragment;
+import android.support.v4.app.ListFragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -9,7 +9,6 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -17,6 +16,7 @@ import cn.adonis.criminalintent.Crime;
 import cn.adonis.criminalintent.CrimeLab;
 import cn.adonis.criminalintent.R;
 import cn.adonis.criminalintent.activity.CrimeActivity;
+import cn.adonis.criminalintent.activity.CrimePagerActivity;
 
 
 public class CrimeListFragment extends ListFragment {
@@ -43,10 +43,10 @@ public class CrimeListFragment extends ListFragment {
 
     @Override
     public void onListItemClick(ListView l, View v, int position, long id) {
-//        Crime c=(Crime)(getListAdapter().getItem(position));
         Crime c=((CrimeAdapter)getListAdapter()).getItem(position);
         //Toast.makeText(getActivity(),c.getTitle(),Toast.LENGTH_SHORT).show();
-        Intent i=new Intent(getActivity(), CrimeActivity.class);
+//        Intent i=new Intent(getActivity(), CrimeActivity.class);
+        Intent i=new Intent(getActivity(), CrimePagerActivity.class);
         i.putExtra(CrimeFragment.EXTRA_CRIME_ID, c.getId());
         //startActivity(i);
         startActivityForResult(i,REQUEST_CRIME);

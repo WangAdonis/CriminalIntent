@@ -1,6 +1,6 @@
 package cn.adonis.criminalintent.activity;
 
-import android.app.Fragment;
+import android.support.v4.app.Fragment;
 import cn.adonis.criminalintent.fragment.CrimeListFragment;
 
 /**
