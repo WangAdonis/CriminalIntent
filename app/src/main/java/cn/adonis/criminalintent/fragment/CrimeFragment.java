@@ -1,24 +1,26 @@
 package cn.adonis.criminalintent.fragment;
 
+import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Intent;
+import android.os.Build;
 import android.support.v4.app.Fragment;
 import android.os.Bundle;
-
 import android.support.v4.app.FragmentManager;
+import android.support.v4.app.NavUtils;
+import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.EditText;
-
 import java.util.Date;
 import java.util.UUID;
-
 import cn.adonis.criminalintent.Crime;
 import cn.adonis.criminalintent.CrimeLab;
 import cn.adonis.criminalintent.R;
@@ -43,8 +45,9 @@ public class CrimeFragment extends Fragment {
         super.onCreate(savedInstanceState);
         UUID crimeID=(UUID)getArguments().getSerializable(EXTRA_CRIME_ID);
         mCrime= CrimeLab.get(getActivity()).getCrimes(crimeID);
+        setHasOptionsMenu(true);
     }
-
+    @TargetApi(11)
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -75,11 +78,11 @@ public class CrimeFragment extends Fragment {
         mDateButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FragmentManager fm=getActivity().getSupportFragmentManager();
+                FragmentManager fm = getActivity().getSupportFragmentManager();
 //                DatePickerFragment dialog=new DatePickerFragment();
-                DatePickerFragment dialog=DatePickerFragment.newInstance(mCrime.getDate());
-                dialog.setTargetFragment(CrimeFragment.this,REQUEST_DATE);
-                dialog.show(fm,DIALOG_DATE);
+                DatePickerFragment dialog = DatePickerFragment.newInstance(mCrime.getDate());
+                dialog.setTargetFragment(CrimeFragment.this, REQUEST_DATE);  //设置回传目标
+                dialog.show(fm, DIALOG_DATE);
             }
         });
         mSolvedCheckBox.setChecked(mCrime.isSolved());
@@ -89,6 +92,13 @@ public class CrimeFragment extends Fragment {
                 mCrime.setSolved(isChecked);
             }
         });
+
+        if(Build.VERSION.SDK_INT>=Build.VERSION_CODES.HONEYCOMB){
+            if(NavUtils.getParentActivityName(getActivity())!=null) {
+                //getActivity().getActionBar().setDisplayHomeAsUpEnabled(true);
+                ((AppCompatActivity)getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            }
+        }
         return view;
     }
 
@@ -105,7 +115,7 @@ public class CrimeFragment extends Fragment {
     }
 
     @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {  //接收从DatePickerFragment回传的数据
         if(resultCode!=Activity.RESULT_OK)
             return;
         if(requestCode==REQUEST_DATE){
@@ -113,5 +123,19 @@ public class CrimeFragment extends Fragment {
             mCrime.setDate(date);
             mDateButton.setText(mCrime.getDate().toString());
         }
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()){
+            case android.R.id.home:
+                if(NavUtils.getParentActivityName(getActivity())!=null){
+                    NavUtils.navigateUpFromSameTask(getActivity());
+                }
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+
     }
 }

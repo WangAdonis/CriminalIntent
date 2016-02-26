@@ -24,4 +24,5 @@ public abstract class SingleFragmentActivity extends AppCompatActivity {
             fm.beginTransaction().add(R.id.fragmentContainer,fragment).commit();
         }
     }
+
 }
