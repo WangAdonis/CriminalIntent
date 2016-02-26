@@ -1,6 +1,7 @@
 package cn.adonis.criminalintent;
 
 import android.content.Context;
+import android.util.Log;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -12,6 +13,10 @@ public class CrimeLab {
     private static CrimeLab sCrimeLab;
     private Context mAppContext;
     private ArrayList<Crime> mCrimes;
+    private static final String TAG="CrimeLab";
+    private static final String FILENAME="crime.json";
+    private CriminalIntentJSONSerializer mSerializer;
+
 
     public ArrayList<Crime> getCrimes() {
         return mCrimes;
@@ -27,7 +32,14 @@ public class CrimeLab {
 
     private CrimeLab(Context appContext){
         mAppContext=appContext;
-        mCrimes=new ArrayList<Crime>();
+        //mCrimes=new ArrayList<Crime>();
+        mSerializer=new CriminalIntentJSONSerializer(mAppContext,FILENAME);
+        try{
+            mCrimes=mSerializer.loadCrimes();
+        }catch (Exception e){
+            mCrimes=new ArrayList<Crime>();
+            Log.e(TAG,"Error loading crimes:",e);
+        }
 //        for(int i=0;i<100;i++){
 //            Crime c=new Crime();
 //            c.setTitle("Crime #"+i);
@@ -47,5 +59,14 @@ public class CrimeLab {
         mCrimes.add(c);
     }
 
-
+    public boolean saveCrimes(){
+        try{
+            mSerializer.saveCrimes(mCrimes);
+            Log.d(TAG, "crimes saved to file");
+            return true;
+        }catch (Exception e){
+            Log.e(TAG,"Error saving crimes:",e);
+            return false;
+        }
+    }
 }
