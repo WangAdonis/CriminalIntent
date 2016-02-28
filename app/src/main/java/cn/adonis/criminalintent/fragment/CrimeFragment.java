@@ -12,6 +12,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -53,6 +55,7 @@ public class CrimeFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view=inflater.inflate(R.layout.fragment_crime, container, false);
+        getActivity().setTitle(mCrime.getTitle());
         mTitleField=(EditText)view.findViewById(R.id.crime_title);
         mDateButton=(Button)view.findViewById(R.id.crime_date);
         mSolvedCheckBox=(CheckBox)view.findViewById(R.id.crime_solved);
@@ -133,6 +136,10 @@ public class CrimeFragment extends Fragment {
                     NavUtils.navigateUpFromSameTask(getActivity());
                 }
                 return true;
+            case R.id.menu_item_crime_delete:
+                CrimeLab.get(getActivity()).deleteCrime(mCrime);
+                getActivity().finish();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -143,4 +150,11 @@ public class CrimeFragment extends Fragment {
         super.onPause();
         CrimeLab.get(getActivity()).saveCrimes();
     }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        super.onCreateOptionsMenu(menu, inflater);
+        inflater.inflate(R.menu.fragment_crime,menu);
+    }
+
 }
