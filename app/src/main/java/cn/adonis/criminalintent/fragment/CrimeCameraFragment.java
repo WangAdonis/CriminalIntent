@@ -2,6 +2,9 @@ package cn.adonis.criminalintent.fragment;
 
 
 
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
 import android.hardware.Camera;
 import android.os.Build;
 import android.os.Bundle;
@@ -14,8 +17,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.UUID;
 
 import cn.adonis.criminalintent.R;
 
@@ -27,6 +32,9 @@ public class CrimeCameraFragment extends Fragment {
     private Camera mCamera;
     private SurfaceView mSurfaceView;
     private Button mTakePictureButton;
+    private View mProgressContainer;
+    public static final String EXTRA_PHOTO_FILENAME="cn.adonis.criminalintent.photo_filename";
+
     public CrimeCameraFragment() {
         // Required empty public constructor
     }
@@ -37,11 +45,14 @@ public class CrimeCameraFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v= inflater.inflate(R.layout.fragment_crime_camera, container, false);
+        mProgressContainer=v.findViewById(R.id.crime_camera_progressContainer);
+        mProgressContainer.setVisibility(View.INVISIBLE);
         mTakePictureButton=(Button)v.findViewById(R.id.crime_camera_takePictureButton);
         mTakePictureButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
+                if(mCamera!=null)
+                    mCamera.takePicture(mShutterCallback,null,mJpegCallback);
             }
         });
         mSurfaceView=(SurfaceView)v.findViewById(R.id.crime_camera_surfaceView);
@@ -66,6 +77,8 @@ public class CrimeCameraFragment extends Fragment {
                 Camera.Parameters parameters=mCamera.getParameters();
                 Camera.Size s=getBestSupportedSize(parameters.getSupportedPreviewSizes(),width,height);
                 parameters.setPreviewSize(s.width,s.height);
+                s=getBestSupportedSize(parameters.getSupportedPreviewSizes(),width,height);
+                parameters.setPictureSize(s.width,s.height);
                 mCamera.setParameters(parameters);
                 try{
                     mCamera.startPreview();
@@ -116,4 +129,44 @@ public class CrimeCameraFragment extends Fragment {
         }
         return bestSize;
     }
+
+    private Camera.ShutterCallback mShutterCallback=new Camera.ShutterCallback() {
+        @Override
+        public void onShutter() {
+            mProgressContainer.setVisibility(View.VISIBLE);
+        }
+    };
+
+    private Camera.PictureCallback mJpegCallback=new Camera.PictureCallback() {
+        @Override
+        public void onPictureTaken(byte[] data, Camera camera) {
+            String filename= UUID.randomUUID().toString()+".jpg";
+            FileOutputStream os=null;
+            boolean success=true;
+            try{
+                os=getActivity().openFileOutput(filename, Context.MODE_PRIVATE);
+                os.write(data);
+            }catch (Exception e){
+                e.printStackTrace();
+                success=false;
+            }finally {
+                try{
+                    if(os!=null){
+                        os.close();
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                    success=false;
+                }
+            }
+            if (success){
+                Intent i=new Intent();
+                i.putExtra(EXTRA_PHOTO_FILENAME,filename);
+                getActivity().setResult(Activity.RESULT_OK,i);
+            }else{
+                getActivity().setResult(Activity.RESULT_CANCELED);
+            }
+            getActivity().finish();
+        }
+    };
 }
