@@ -13,7 +13,18 @@
     <string name="hide_subtitle">隐藏副标题</string>
     <string name="subtitle">有一说一</string>
     <string name="delete_crime">删除</string>
+    <string name="crime_suspect_text">选择嫌疑人</string>
+    <string name="crime_report_text">发送陋习报告</string>
     <string name="take">拍摄</string>
+    <string name="crime_report">%1$s！
+        陋习发生在 %2$s， %3$s, 并且%4$s
+    </string>
+    <string name="crime_report_solved">陋习已解决</string>
+    <string name="crime_report_unsolved">陋习未解决</string>
+    <string name="crime_report_no_suspect">没有嫌疑人</string>
+    <string name="crime_report_suspect">嫌疑人是%s</string>
+    <string name="crime_report_subject">陋习报告</string>
+    <string name="send_report">发送陋习</string>
 
     <string name="action_settings">settings</string>
     <!-- TODO: Remove or change this placeholder text -->
