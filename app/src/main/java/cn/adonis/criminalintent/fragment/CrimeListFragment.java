@@ -1,5 +1,6 @@
 package cn.adonis.criminalintent.fragment;
 
+import android.app.Activity;
 import android.os.Build;
 import android.support.v4.app.ListFragment;
 import android.content.Intent;
@@ -31,6 +32,7 @@ public class CrimeListFragment extends ListFragment {
     private ArrayList<Crime> mCrimes;
     private static final int REQUEST_CRIME=1;
     private boolean isSubtitleVisible;
+    private Callbacks mCallbacks;  //自定义回调接口
 
     // TODO: Customize parameter argument names
     public CrimeListFragment() {
@@ -115,10 +117,11 @@ public class CrimeListFragment extends ListFragment {
         Crime c=((CrimeAdapter)getListAdapter()).getItem(position);
         //Toast.makeText(getActivity(),c.getTitle(),Toast.LENGTH_SHORT).show();
 //        Intent i=new Intent(getActivity(), CrimeActivity.class);
-        Intent i=new Intent(getActivity(), CrimePagerActivity.class);
-        i.putExtra(CrimeFragment.EXTRA_CRIME_ID, c.getId());
-        //startActivity(i);
-        startActivityForResult(i,REQUEST_CRIME);
+//        Intent i=new Intent(getActivity(), CrimePagerActivity.class);
+//        i.putExtra(CrimeFragment.EXTRA_CRIME_ID, c.getId());
+//        //startActivity(i);
+//        startActivityForResult(i,REQUEST_CRIME);
+        mCallbacks.onCrimeSelected(c);  //调用托管Activity内实现的回调函数
     }
 
     private class CrimeAdapter extends ArrayAdapter<Crime> {
@@ -173,9 +176,11 @@ public class CrimeListFragment extends ListFragment {
             case R.id.menu_item_new_crime:
                 Crime crime=new Crime();
                 CrimeLab.get(getActivity()).addCrime(crime);
-                Intent i=new Intent(getActivity(),CrimePagerActivity.class);
-                i.putExtra(CrimeFragment.EXTRA_CRIME_ID, crime.getId());
-                startActivityForResult(i,0);
+//                Intent i=new Intent(getActivity(),CrimePagerActivity.class);
+//                i.putExtra(CrimeFragment.EXTRA_CRIME_ID, crime.getId());
+//                startActivityForResult(i,0);
+                ((CrimeAdapter)getListAdapter()).notifyDataSetChanged();
+                mCallbacks.onCrimeSelected(crime);
                 return true;
             case R.id.menu_item_show_subtitle:
                 //if(getActivity().getActionBar().getSubtitle()==null) {
@@ -222,5 +227,25 @@ public class CrimeListFragment extends ListFragment {
     public void onPause() {
         super.onPause();
         CrimeLab.get(getActivity()).saveCrimes();
+    }
+
+    public interface Callbacks{  //自定义回调接口
+        void onCrimeSelected(Crime crime);
+    }
+
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        mCallbacks=(Callbacks)activity;
+    }
+
+    @Override
+    public void onDetach() {
+        super.onDetach();
+        mCallbacks=null;
+    }
+
+    public void updateUI(){
+        ((CrimeAdapter)getListAdapter()).notifyDataSetChanged();
     }
 }

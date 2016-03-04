@@ -15,7 +15,7 @@ import cn.adonis.criminalintent.CrimeLab;
 import cn.adonis.criminalintent.R;
 import cn.adonis.criminalintent.fragment.CrimeFragment;
 
-public class CrimePagerActivity extends AppCompatActivity {
+public class CrimePagerActivity extends AppCompatActivity implements CrimeFragment.Callbacks{
 
     private ViewPager mViewPager;
     private ArrayList<Crime> mCrimes;
@@ -71,5 +71,10 @@ public class CrimePagerActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    @Override
+    public void onCrimeUpdated(Crime crime) {
+
     }
 }
